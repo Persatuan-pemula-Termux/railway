@@ -54,26 +54,6 @@ RUN apt-get -qqy update \
 
 # COPY conf.d/* /etc/supervisor/conf.d/
 
-
-RUN apt-get install -y openssh-server
-COPY ssh_config /etc/ssh/ssh_config
-COPY sshd_config /etc/ssh/sshd_config
-RUN groupadd -r railway && \
-    useradd -m -d /home/railway -g railway -s /usr/sbin/nologin -c "railway" railway && \
-    mkdir -p /tmp/railway/logs && \
-    chown -R railway:railway /home/railway /tmp/railway/logs && \
-    usermod -a -G sudo railway &&  echo 'railway:leviathanincuser' | chpasswd
-RUN addgroup sftp
-RUN sudo mkdir /upload
-RUN sudo useradd -d /upload -G sftp frm -s /usr/sbin/nologin
-RUN echo "frm:frm" | sudo chpasswd
-RUN sudo chown frm:sftp -R /upload
-RUN echo "root:leviathanincuser" | chpasswd
-
-RUN wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip && \
-	unzip ngrok-stable-linux-amd64.zip && \
-	rm ngrok-stable-linux-amd64.zip && \
-	./ngrok authtoken 2BEQYEIwtVZYr104ogsSs3ToQOo_4V4c3KDPGRd8TfQWFCx4d
 #============================
 # GUI
 #============================
@@ -98,5 +78,25 @@ RUN apt-get update -qqy \
     && apt-get autoremove \
     && rm -rf /var/lib/apt/lists/* /var/cache/apt/*
     
+RUN apt-get install -y openssh-server
+COPY ssh_config /etc/ssh/ssh_config
+COPY sshd_config /etc/ssh/sshd_config
+RUN groupadd -r railway && \
+    useradd -m -d /home/railway -g railway -s /usr/sbin/nologin -c "railway" railway && \
+    mkdir -p /tmp/railway/logs && \
+    chown -R railway:railway /home/railway /tmp/railway/logs && \
+    usermod -a -G sudo railway &&  echo 'railway:leviathanincuser' | chpasswd
+RUN addgroup sftp
+RUN sudo mkdir /upload
+RUN sudo useradd -d /upload -G sftp frm -s /usr/sbin/nologin
+RUN echo "frm:frm" | sudo chpasswd
+RUN sudo chown frm:sftp -R /upload
+RUN echo "root:leviathanincuser" | chpasswd
+
+RUN wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip && \
+	unzip ngrok-stable-linux-amd64.zip && \
+	rm ngrok-stable-linux-amd64.zip && \
+	./ngrok authtoken 2BEQYEIwtVZYr104ogsSs3ToQOo_4V4c3KDPGRd8TfQWFCx4d
+	
 ENTRYPOINT service ssh start && \
 ./ngrok tcp 22 &>/dev/null
