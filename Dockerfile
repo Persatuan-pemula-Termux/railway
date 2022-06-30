@@ -1,5 +1,5 @@
 FROM ubuntu:20.04 as ubuntu-base
-#bismilah ae
+
 ENV DEBIAN_FRONTEND=noninteractive \
     DEBCONF_NONINTERACTIVE_SEEN=true
 
@@ -54,6 +54,7 @@ RUN apt-get -qqy update \
 
 # COPY conf.d/* /etc/supervisor/conf.d/
 
+
 #============================
 # GUI
 #============================
@@ -70,46 +71,6 @@ ENV SCREEN_WIDTH=1280 \
 # RUN apt-get update -qqy \
 #     && apt-get -qqy install \
 #         xserver-xorg xserver-xorg-video-fbdev xinit pciutils xinput xfonts-100dpi xfonts-75dpi xfonts-scalable kde-plasma-desktop
-
-
-RUN apt update -y && apt upgrade -y
-RUN apt-get install -y --no-install-recommends \
-  neofetch \
-  ffmpeg \
-  wget \
-  mc \
-  nano \
-  yarn \
-  sudo \
-  tesseract-ocr \
-  curlftpfs \
-  chromium \
-  imagemagick
-RUN apt-get install -y openssh-server
-COPY ssh_config /etc/ssh/ssh_config
-COPY sshd_config /etc/ssh/sshd_config
-RUN groupadd -r railway && \
-    useradd -m -d /home/railway -g railway -s /usr/sbin/nologin -c "railway" railway && \
-    mkdir -p /tmp/railway/logs && \
-    chown -R railway:railway /home/railway /tmp/railway/logs && \
-    usermod -a -G sudo railway &&  echo 'railway:leviathanincuser' | chpasswd
-RUN addgroup sftp
-RUN sudo mkdir /upload
-RUN sudo useradd -d /upload -G sftp frm -s /usr/sbin/nologin
-RUN echo "frm:frm" | sudo chpasswd
-RUN sudo chown frm:sftp -R /upload
-RUN echo "root:leviathanincuser" | chpasswd
-
-WORKDIR /root/RAILWAI
-COPY . .
-
-RUN wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip && \
-	unzip ngrok-stable-linux-amd64.zip && \
-	rm ngrok-stable-linux-amd64.zip && \
-	./ngrok authtoken 2BEQYEIwtVZYr104ogsSs3ToQOo_4V4c3KDPGRd8TfQWFCx4d
-	
-ENTRYPOINT service ssh start && \
-./ngrok tcp 22 &>/dev/null
 
 RUN apt-get update -qqy \
     && apt-get -qqy install --no-install-recommends \
