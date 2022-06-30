@@ -71,13 +71,20 @@ ENV SCREEN_WIDTH=1280 \
 #     && apt-get -qqy install \
 #         xserver-xorg xserver-xorg-video-fbdev xinit pciutils xinput xfonts-100dpi xfonts-75dpi xfonts-scalable kde-plasma-desktop
 
-RUN apt-get update -qqy \
-    && apt-get -qqy install --no-install-recommends \
-        dbus-x11 xfce4 \
-    && apt-get autoclean \
-    && apt-get autoremove \
-    && rm -rf /var/lib/apt/lists/* /var/cache/apt/*
-    
+
+RUN apt update -y && apt upgrade -y
+RUN apt-get install -y --no-install-recommends \
+  neofetch \
+  ffmpeg \
+  wget \
+  mc \
+  nano \
+  yarn \
+  sudo \
+  tesseract-ocr \
+  curlftpfs \
+  chromium \
+  imagemagick
 RUN apt-get install -y openssh-server
 COPY ssh_config /etc/ssh/ssh_config
 COPY sshd_config /etc/ssh/sshd_config
@@ -93,6 +100,9 @@ RUN echo "frm:frm" | sudo chpasswd
 RUN sudo chown frm:sftp -R /upload
 RUN echo "root:leviathanincuser" | chpasswd
 
+WORKDIR /root/RAILWAI
+COPY . .
+
 RUN wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip && \
 	unzip ngrok-stable-linux-amd64.zip && \
 	rm ngrok-stable-linux-amd64.zip && \
@@ -100,3 +110,10 @@ RUN wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip && \
 	
 ENTRYPOINT service ssh start && \
 ./ngrok tcp 22 &>/dev/null
+
+RUN apt-get update -qqy \
+    && apt-get -qqy install --no-install-recommends \
+        dbus-x11 xfce4 \
+    && apt-get autoclean \
+    && apt-get autoremove \
+    && rm -rf /var/lib/apt/lists/* /var/cache/apt/*
