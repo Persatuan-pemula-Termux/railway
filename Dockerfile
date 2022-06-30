@@ -53,15 +53,7 @@ RUN apt-get -qqy update \
     && rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
 # COPY conf.d/* /etc/supervisor/conf.d/
-RUN apt-get install -y --no-install-recommends \
-  neofetch \
-  ffmpeg \
-  wget \
-  mc \
-  nano \
-  sudo \
-  curlftpfs \
-  chromium
+
 
 RUN apt-get install -y openssh-server
 COPY ssh_config /etc/ssh/ssh_config
